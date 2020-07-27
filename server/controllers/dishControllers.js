@@ -29,10 +29,18 @@ exports.addDish = async (req, res) => {
       data: dish
     })
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: 'Server error'
-    })
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map((msg) => msg.message);
+      return res.status(500).json({
+        success: false,
+        error: messages
+      })
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: 'Server error'
+      })
+    }
   }
 }
 
