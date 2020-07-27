@@ -36,7 +36,7 @@ const restaurantSchema = new mongoose.Schema({
   dishes: [{
     type: mongoose.Schema.Types.ObjectId, ref: Dish,
   }],
-  opinions: [{
+  reviews: [{
     type: mongoose.Schema.Types.ObjectId, ref: Review,
   }],
   workHours: {

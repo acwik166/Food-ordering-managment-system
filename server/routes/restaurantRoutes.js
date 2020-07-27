@@ -10,9 +10,11 @@ const {
   addDish,  
   deleteDish
 } = require('../controllers/dishControllers');
+const { getReviews, addReview, deleteReview } = require('../controllers/reviewController');
 
 const router = express.Router();
 
+// Restaurant
 router
   .route('/')
   .get(getRestaurants)
@@ -23,13 +25,24 @@ router
   .get(getRestaurant)
   .delete(deleteRestaurant);
 
-router
-  .route('/:id/dishes/:dishId')
-  .delete(deleteDish);
-
+// Dishes
 router
   .route('/:id/dishes')
   .get(getDishes)
   .post(addDish);
+  
+router
+  .route('/:id/dishes/:dishId')
+  .delete(deleteDish);
+
+// Reviews
+router
+  .route('/:id/reviews')
+  .get(getReviews)
+  .post(addReview);
+
+router
+  .route('/:id/reviews/:reviewId')
+  .delete(deleteReview);
 
 module.exports = router;
