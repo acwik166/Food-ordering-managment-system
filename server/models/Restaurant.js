@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Dish = require('./Dish');
+const Review = require('./Review');
 
 const restaurantSchema = new mongoose.Schema({
   name: {
@@ -31,10 +33,10 @@ const restaurantSchema = new mongoose.Schema({
     required: true
   },
   dishes: [{
-    type: Schema.Types.ObjectId, ref: 'Dish',
+    type: Schema.Types.ObjectId, ref: Dish,
   }],
   opinions: [{
-    type: Schema.Types.ObjectId, ref: 'Review',
+    type: Schema.Types.ObjectId, ref: Review,
   }],
   workHours: {
     monday: {
@@ -97,45 +99,6 @@ const restaurantSchema = new mongoose.Schema({
   },
 }, { timestamps: true })
 
-const dishSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true
-  },
-  ingredients: [{
-    type: String
-  }],
-  size: [{
-    type: Number
-  }],
-  category: [{
-    type: String
-  }]
-})
-
-const reviewSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  text: {
-    type: String,
-    required: true
-  },
-  rating: {
-    type: Number,
-    default: 0,
-    min: 0,
-    max: 5
-  }
-}, { timestamps: true })
-
-// Order schema
-
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
-const Review = mongoose.model('Review', reviewSchema);
-const Dish = mongoose.model('Dish', dishSchema);
+
+module.exports = Restaurant;
