@@ -1,28 +1,14 @@
 const mongoose = require('mongoose');
+const Dish = require('../models/Dish');
 const Restaurant = require('../models/Restaurant');
 
-exports.getRestaurants = async (req, res) => {
-  try {
-    const restaurants = await Restaurant.find();
-    return res.status(200).json({
-      success: true,
-      length: restaurants.length,
-      data: restaurants
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: 'Server error'
-    })
-  }
-}
-
-exports.getRestaurant = async (req, res) => {
+exports.getDishes = async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
+    const dishes = await Dish.find({ _id: { $in: restaurant.dishes } });
     return res.status(200).json({
       success: true,
-      data: restaurant
+      data: dishes
     })
   } catch (error) {
     return res.status(500).json({
@@ -32,13 +18,16 @@ exports.getRestaurant = async (req, res) => {
   }
 }
 
-exports.addRestaurant = async (req, res) => {
+exports.addDish = async (req, res) => {
   try {
-    const restaurant = await Restaurant.create(req.body);
+    const dish = await Dish.create(req.body);
+    const restaurant = await Restaurant.findById(req.params.id)
+    restaurant.dishes.push(dish.id);
+    await restaurant.save();
     return res.status(201).json({
       success: true,
-      data: restaurant
-    });
+      data: dish
+    })
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -47,10 +36,13 @@ exports.addRestaurant = async (req, res) => {
   }
 }
 
-exports.deleteRestaurant = async (req, res) => {
+exports.deleteDish = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
-    return res.status(200).json({
+    const dish = await Dish.findByIdAndDelete(req.params.dishId);
+    const restaurant = await Restaurant.findById(req.params.id);
+    restaurant.dishes.pull(req.params.dishId);
+    await restaurant.save()
+    return res.status(201).json({
       success: true,
       message: 'Successfully deleted'
     })

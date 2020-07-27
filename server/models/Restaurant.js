@@ -14,11 +14,12 @@ const restaurantSchema = new mongoose.Schema({
   address: {
     city: {
       type: String,
+      required: true,
     },
     street: {
       type: String,
+      required: true,
     },
-    required: true
   },
   phone: {
     type: String,
@@ -33,10 +34,10 @@ const restaurantSchema = new mongoose.Schema({
     required: true
   },
   dishes: [{
-    type: Schema.Types.ObjectId, ref: Dish,
+    type: mongoose.Schema.Types.ObjectId, ref: Dish,
   }],
   opinions: [{
-    type: Schema.Types.ObjectId, ref: Review,
+    type: mongoose.Schema.Types.ObjectId, ref: Review,
   }],
   workHours: {
     monday: {
@@ -95,7 +96,6 @@ const restaurantSchema = new mongoose.Schema({
         type: String
       }
     },
-    required: true
   },
 }, { timestamps: true })
 
