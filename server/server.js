@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const restaurantRoutes = require('./routes/restaurantRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 // Configure environmental variables
 dotenv.config({ path: './config/config.env' });
@@ -15,7 +16,8 @@ connectDB();
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use('/api/v1/restaurants/', restaurantRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/restaurants', restaurantRoutes);
 
 const PORT = process.env.PORT || 5000;
 

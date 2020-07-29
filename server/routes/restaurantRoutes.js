@@ -1,4 +1,6 @@
 const express = require('express');
+const router = express.Router();
+
 const { 
   getRestaurants, 
   getRestaurant, 
@@ -12,9 +14,7 @@ const {
 } = require('../controllers/dishControllers');
 const { getReviews, addReview, deleteReview } = require('../controllers/reviewController');
 
-const router = express.Router();
 
-// Restaurant
 router
   .route('/')
   .get(getRestaurants)

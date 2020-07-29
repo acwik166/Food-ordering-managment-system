@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Dish = require('./Dish');
 const Review = require('./Review');
+const addressSchema = require('./Address');
 
 const restaurantSchema = new mongoose.Schema({
   name: {
@@ -12,14 +13,8 @@ const restaurantSchema = new mongoose.Schema({
     required: true
   },
   address: {
-    city: {
-      type: String,
-      required: true,
-    },
-    street: {
-      type: String,
-      required: true,
-    },
+    type: addressSchema,
+    required: true
   },
   phone: {
     type: String,
@@ -98,6 +93,10 @@ const restaurantSchema = new mongoose.Schema({
     },
   },
 }, { timestamps: true })
+
+// restaurantSchema.pre('remove', (next) => {
+//   // Review.remove({ _id: this._id }, next);
+// })
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 

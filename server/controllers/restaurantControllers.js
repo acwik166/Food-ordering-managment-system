@@ -57,7 +57,8 @@ exports.addRestaurant = async (req, res) => {
 
 exports.deleteRestaurant = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
+    const restaurant = await Restaurant.findById(req.params.id);
+    restaurant.remove();
     return res.status(200).json({
       success: true,
       message: 'Successfully deleted'
