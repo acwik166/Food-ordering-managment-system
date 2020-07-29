@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.getUsers = async (req, res) => {
@@ -65,9 +66,11 @@ exports.loginUser = async (req, res) => {
     }
     await bcrypt.compare(req.body.password, user.password, (err, result) => {
       if (result) {
+        const accessToken = jwt.sign(user.toJSON(), process.env.ACCESS_TOKEN_SECRET)
         res.status(200).json({
           success: true,
-          message: 'Auth successful'
+          message: 'Logged in',
+          accessToken: accessToken
         })
       } else {
         return res.status(401).json({
