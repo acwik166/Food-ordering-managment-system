@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const checkAuth = require('../middleware/checkAuth');
 
 const { 
   getRestaurants, 
@@ -14,6 +15,7 @@ const {
 } = require('../controllers/dishControllers');
 const { getReviews, addReview, deleteReview } = require('../controllers/reviewController');
 
+router.use('/', checkAuth);
 
 router
   .route('/')
