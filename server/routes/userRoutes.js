@@ -6,10 +6,13 @@ const { getUsers, addUser, loginUser } = require('../controllers/userControllers
 router
   .route('/')
   .get(getUsers)
+
+router
+  .route('/signup')
   .post(addUser);
 
 router
   .route('/login')
-  .post(loginUser)
+  .post(loginUser);
 
 module.exports = router;
