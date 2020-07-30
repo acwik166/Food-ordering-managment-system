@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const checkAuth = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const header = req.headers['authorization'];
   const token = header && header.split(' ')[1];
 
@@ -13,9 +13,9 @@ const checkAuth = (req, res, next) => {
       res.sendStatus(403);
     }
     req.user = user;
-    next()
+    next();
   })
 }
 
-module.exports = checkAuth;
+module.exports = verifyToken;
 
