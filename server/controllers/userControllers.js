@@ -34,7 +34,7 @@ exports.addUser = async (req, res) => {
       'phone': req.body.phone,
       'userInfo': {
         'addresses': [...req.body.addresses]
-      }
+      },
     });
     res.status(201).json({
       success: true,
@@ -72,8 +72,9 @@ exports.addAdmin = async (req, res) => {
       'role': 'admin',
       'email': req.body.email,
       'phone': req.body.phone,
-      'addresses': [...req.body.addresses],
-      'adminInfo': {},
+      'adminInfo': {
+        'address': req.body.address,
+      },
     });
     res.status(201).json({
       success: true,
@@ -147,7 +148,7 @@ exports.loginUser = async (req, res) => {
     }
     await bcrypt.compare(req.body.password, user.password, (err, result) => {
       if (result) {
-        const accessToken = jwt.sign(user.email, process.env.ACCESS_TOKEN_SECRET)
+        const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET)
         res.status(200).json({
           success: true,
           message: 'Logged in',

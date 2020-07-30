@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken');
+const { authUser, authRole } = require('../middleware/auth');
 
 const { 
   getRestaurants, 
@@ -16,13 +17,14 @@ const {
 const { getReviews, addReview, deleteReview } = require('../controllers/reviewController');
 
 router.use('/', verifyToken);
+router.use('/', authUser);
 
 // Add middleware to verify company account *addRestaurant, deleteRestaurant, deleteDish*
 
 router
   .route('/')
   .get(getRestaurants)
-  .post(addRestaurant);
+  .post(authRole('owner'), addRestaurant);
 
 router
   .route('/:id')

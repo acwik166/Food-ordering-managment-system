@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     address: addressSchema
   },
   adminInfo: {
-
+    address: addressSchema
   },
 })
 
