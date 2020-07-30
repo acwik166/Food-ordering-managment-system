@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getUsers, addUser, loginUser } = require('../controllers/userControllers');
+const { getUsers, addUser, addOwner, addAdmin, loginUser } = require('../controllers/userControllers');
 
 router
   .route('/')
@@ -10,6 +10,14 @@ router
 router
   .route('/signup')
   .post(addUser);
+
+router
+  .route('/signup-owner')
+  .post(addOwner);
+
+router
+  .route('/signup-admin')
+  .post(addAdmin);
 
 router
   .route('/login')

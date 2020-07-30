@@ -17,6 +17,8 @@ const { getReviews, addReview, deleteReview } = require('../controllers/reviewCo
 
 router.use('/', verifyToken);
 
+// Add middleware to verify company account *addRestaurant, deleteRestaurant, deleteDish*
+
 router
   .route('/')
   .get(getRestaurants)

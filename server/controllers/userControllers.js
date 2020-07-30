@@ -32,7 +32,9 @@ exports.addUser = async (req, res) => {
       'password': hashedPassword,
       'email': req.body.email,
       'phone': req.body.phone,
-      'addresses': [...req.body.addresses]
+      'userInfo': {
+        'addresses': [...req.body.addresses]
+      }
     });
     res.status(201).json({
       success: true,
@@ -70,7 +72,49 @@ exports.addAdmin = async (req, res) => {
       'role': 'admin',
       'email': req.body.email,
       'phone': req.body.phone,
-      'addresses': [...req.body.addresses]
+      'addresses': [...req.body.addresses],
+      'adminInfo': {},
+    });
+    res.status(201).json({
+      success: true,
+      data: user
+    })
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map((msg) => msg.message);
+      return res.status(500).json({
+        success: false,
+        error: messages
+      })
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: 'Server error'
+      })
+    }
+  }
+}
+
+exports.addOwner = async (req, res) => {
+  try {
+    if (await User.findOne({ email: req.body.email })) {
+      return res.status(409).json({
+        success: false,
+        message: 'User with this email already exists'
+      })
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = await User.create({
+      'firstName': req.body.firstName,
+      'lastName': req.body.lastName,
+      'password': hashedPassword,
+      'role': 'owner',
+      'email': req.body.email,
+      'phone': req.body.phone,
+      'ownerInfo': {
+        'restaurants': [],
+        'address': req.body.address,
+      }
     });
     res.status(201).json({
       success: true,

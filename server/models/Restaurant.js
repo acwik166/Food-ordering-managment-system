@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 const Dish = require('./Dish');
 const Review = require('./Review');
+const User = require('./User');
 const addressSchema = require('./Address');
 
 const restaurantSchema = new mongoose.Schema({
+  owner: {
+    type: mongoose.Schema.Types.ObjectId, ref: User,
+    required: true,
+  },
   name: {
     type: String,
     required: true

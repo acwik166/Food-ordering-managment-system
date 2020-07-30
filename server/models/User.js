@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const addressSchema = require('./Address');
+const Restaurant = require('./Restaurant');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -16,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'owner'],
     default: 'user',
     required: true
   },
@@ -29,7 +30,22 @@ const userSchema = new mongoose.Schema({
     maxlength: 9,
     required: true
   },
-  addresses: [addressSchema]
+  userInfo: {
+    addresses: [addressSchema]
+  },
+  ownerInfo: {
+    restaurants: [{ 
+      type: mongoose.Schema.Types.ObjectId, ref: Restaurant,
+      verified: {
+        type: Boolean,
+        default: false
+      }
+    }],
+    address: addressSchema
+  },
+  adminInfo: {
+
+  },
 })
 
 const User = mongoose.model('User', userSchema);
