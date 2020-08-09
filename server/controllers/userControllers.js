@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const db = require('../db/index');
 
 exports.getUsers = async (req, res) => {
   try {
+    const result = await db.query('SELECT * FROM client');
     res.status(200).json({
       success: true,
-      data: []
+      data: result.rows
     })
   } catch (error) {
     res.status(500).json({
@@ -19,127 +19,56 @@ exports.getUsers = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    if (await User.findOne({ email: req.body.email })) {
-      return res.status(409).json({
-        success: false,
-        message: 'User with this email already exists'
-      })
-    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create({
-      'firstName': req.body.firstName,
-      'lastName': req.body.lastName,
-      'password': hashedPassword,
-      'email': req.body.email,
-      'phone': req.body.phone,
-      'userInfo': {
-        'addresses': [...req.body.addresses]
-      },
-    });
+    const result = await db.query('INSERT INTO client (firstName, lastName, password, email, role) VALUES($1, $2, $3, $4, $5)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, 'user']);
     res.status(201).json({
       success: true,
-      data: user
+      data: `User ${req.body.firstName} ${req.body.lastName} added`
     })
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((msg) => msg.message);
-      return res.status(500).json({
-        success: false,
-        error: messages
-      })
-    } else {
-      return res.status(500).json({
-        success: false,
-        error: 'Server error'
-      })
-    }
+    return res.status(500).json({
+      success: false,
+      error: error.detail
+    })
   }
 }
 
 exports.addAdmin = async (req, res) => {
   try {
-    if (await User.findOne({ email: req.body.email })) {
-      return res.status(409).json({
-        success: false,
-        message: 'User with this email already exists'
-      })
-    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create({
-      'firstName': req.body.firstName,
-      'lastName': req.body.lastName,
-      'password': hashedPassword,
-      'role': 'admin',
-      'email': req.body.email,
-      'phone': req.body.phone,
-      'adminInfo': {
-        'address': req.body.address,
-      },
-    });
+    const result = await db.query('INSERT INTO client (firstName, lastName, password, email, role) VALUES($1, $2, $3, $4, $5)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, 'admin']);
     res.status(201).json({
       success: true,
-      data: user
+      data: `Admin ${req.body.firstName} ${req.body.lastName} added`
     })
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((msg) => msg.message);
-      return res.status(500).json({
-        success: false,
-        error: messages
-      })
-    } else {
-      return res.status(500).json({
-        success: false,
-        error: 'Server error'
-      })
-    }
+    return res.status(500).json({
+      success: false,
+      error: error.detail
+    })
   }
 }
 
 exports.addOwner = async (req, res) => {
   try {
-    if (await User.findOne({ email: req.body.email })) {
-      return res.status(409).json({
-        success: false,
-        message: 'User with this email already exists'
-      })
-    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create({
-      'firstName': req.body.firstName,
-      'lastName': req.body.lastName,
-      'password': hashedPassword,
-      'role': 'owner',
-      'email': req.body.email,
-      'phone': req.body.phone,
-      'ownerInfo': {
-        'restaurants': [],
-        'address': req.body.address,
-      }
-    });
+    const result = await db.query('INSERT INTO client (firstName, lastName, password, email, role) VALUES($1, $2, $3, $4, $5)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, 'owner']);
     res.status(201).json({
       success: true,
-      data: user
+      data: `Owner ${req.body.firstName} ${req.body.lastName} added`
     })
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((msg) => msg.message);
-      return res.status(500).json({
-        success: false,
-        error: messages
-      })
-    } else {
-      return res.status(500).json({
-        success: false,
-        error: 'Server error'
-      })
-    }
+    return res.status(500).json({
+      success: false,
+      error: error.detail
+    })
   }
 }
 
 exports.loginUser = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const result = await db.query('SELECT * FROM client WHERE email = $1', [req.body.email]);
+    const user = result.rows[0];
     if (user == null) {
       return res.status(401).json({
         success: false,
@@ -148,7 +77,7 @@ exports.loginUser = async (req, res) => {
     }
     await bcrypt.compare(req.body.password, user.password, (err, result) => {
       if (result) {
-        const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET)
+        const accessToken = jwt.sign({ id: user.id, role: user.role }, process.env.ACCESS_TOKEN_SECRET)
         res.status(200).json({
           success: true,
           message: 'Logged in',

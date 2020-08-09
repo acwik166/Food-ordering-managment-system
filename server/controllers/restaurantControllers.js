@@ -1,13 +1,12 @@
-const mongoose = require('mongoose');
-const Restaurant = require('../models/Restaurant');
+const db = require('../db/index');
 
 exports.getRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find();
+    const result = await db.query('SELECT * FROM restaurant');
     return res.status(200).json({
       success: true,
-      length: restaurants.length,
-      data: restaurants
+      length: result.rows.length,
+      data: result.rows
     })
   } catch (error) {
     return res.status(500).json({
@@ -19,10 +18,10 @@ exports.getRestaurants = async (req, res) => {
 
 exports.getRestaurant = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id);
+    const result = await db.query('SELECT * FROM restaurant WHERE id = $1', [req.params.id]);
     return res.status(200).json({
       success: true,
-      data: restaurant
+      data: result.rows[0]
     })
   } catch (error) {
     return res.status(500).json({
@@ -34,31 +33,24 @@ exports.getRestaurant = async (req, res) => {
 
 exports.addRestaurant = async (req, res) => {
   try {
-    const restaurant = await Restaurant.create(req.body);
+    const address = await db.query('INSERT INTO restaurantaddress (city, street, zip) VALUES($1, $2, $3) RETURNING id', [req.body.city, req.body.street, req.body.zip]);
+    const restaurantAddressId = address.rows[0].id;
+    const result = await db.query('INSERT INTO restaurant (name, type, phone, delivery, deliveryFee, owner_id, address_id) VALUES($1, $2, $3, $4, $5, $6, $7)', [req.body.name, req.body.type, req.body.phone, req.body.delivery, req.body.deliveryFee, req.user.id, restaurantAddressId]);
     return res.status(201).json({
       success: true,
-      data: restaurant
+      data: `Restaurant ${req.body.name} created`
     });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((msg) => msg.message);
-      return res.status(500).json({
-        success: false,
-        error: messages
-      })
-    } else {
-      return res.status(500).json({
-        success: false,
-        error: 'Server error'
-      })
-    }
+    return res.status(500).json({
+      success: false,
+      error: 'Server error'
+    })
   }
 }
 
 exports.deleteRestaurant = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id);
-    restaurant.remove();
+    const result = await db.query('DELETE FROM restaurant WHERE id = $1', [req.params.id]);
     return res.status(200).json({
       success: true,
       message: 'Successfully deleted'

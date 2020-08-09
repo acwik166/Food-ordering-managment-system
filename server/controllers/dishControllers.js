@@ -1,14 +1,26 @@
-const mongoose = require('mongoose');
-const Dish = require('../models/Dish');
-const Restaurant = require('../models/Restaurant');
+const db = require('../db/index');
 
 exports.getDishes = async (req, res) => {
   try {
-    const restaurant = await Restaurant.findById(req.params.id);
-    const dishes = await Dish.find({ _id: { $in: restaurant.dishes } });
+    const result = await db.query('SELECT * FROM dish');
     return res.status(200).json({
       success: true,
-      data: dishes
+      data: result.rows
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Server error'
+    })
+  }
+}
+
+exports.getDish = async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM dish WHERE id = $1', [req.params.dishId]);
+    return res.status(200).json({
+      success: true,
+      data: result.rows[0]
     })
   } catch (error) {
     return res.status(500).json({
@@ -20,36 +32,22 @@ exports.getDishes = async (req, res) => {
 
 exports.addDish = async (req, res) => {
   try {
-    const dish = await Dish.create(req.body);
-    const restaurant = await Restaurant.findById(req.params.id)
-    restaurant.dishes.push(dish.id);
-    await restaurant.save();
+    const result = await db.query('INSERT INTO dish (name, sizes, ingredients, price, restaurant_id) VALUES($1, $2, $3, $4, $5)', [req.body.name, req.body.sizes, req.body.ingredients, req.body.price, req.restaurant.id]);
     return res.status(201).json({
       success: true,
-      data: dish
+      data: `Dish ${req.body.name} added`
     })
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((msg) => msg.message);
-      return res.status(500).json({
-        success: false,
-        error: messages
-      })
-    } else {
-      return res.status(500).json({
-        success: false,
-        error: 'Server error'
-      })
-    }
+    return res.status(500).json({
+      success: false,
+      error: 'Server error'
+    })
   }
 }
 
 exports.deleteDish = async (req, res) => {
   try {
-    const dish = await Dish.findByIdAndDelete(req.params.dishId);
-    const restaurant = await Restaurant.findById(req.params.id);
-    restaurant.dishes.pull(req.params.dishId);
-    await restaurant.save()
+    const result = await db.query('DELETE FROM dish WHERE id = $1', [req.params.dishId]);
     return res.status(201).json({
       success: true,
       message: 'Successfully deleted'

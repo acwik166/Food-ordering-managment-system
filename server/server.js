@@ -1,7 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
-const connectDB = require('./config/db');
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const userRoutes = require('./routes/userRoutes');
 
@@ -9,9 +8,6 @@ const userRoutes = require('./routes/userRoutes');
 dotenv.config({ path: './config/config.env' });
 
 const app = express();
-
-// Connect database
-connectDB();
 
 app.use(express.json());
 app.use(morgan('dev'));

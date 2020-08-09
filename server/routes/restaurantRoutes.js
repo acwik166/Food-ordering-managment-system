@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken');
-const { authUser, authRole } = require('../middleware/auth');
-
+const { 
+  setRestaurant, 
+  authIsRestaurantOwner, 
+  authAddRestaurant, 
+  authIsReviewAuthor
+ } = require('../middleware/restaurantPermissions');
 const { 
   getRestaurants, 
   getRestaurant, 
@@ -12,34 +16,41 @@ const {
 const { 
   getDishes, 
   addDish,  
+  getDish,
   deleteDish
 } = require('../controllers/dishControllers');
-const { getReviews, addReview, deleteReview } = require('../controllers/reviewController');
+const { 
+  getReviews, 
+  getReview, 
+  addReview, 
+  deleteReview 
+} = require('../controllers/reviewController');
 
 router.use('/', verifyToken);
-router.use('/', authUser);
+router.use('/:id', setRestaurant)
+router.use('/:id', authIsRestaurantOwner);
 
-// Add middleware to verify company account *addRestaurant, deleteRestaurant, deleteDish*
-
+// Restaurant 
 router
   .route('/')
   .get(getRestaurants)
-  .post(authRole('owner'), addRestaurant);
+  .post(authAddRestaurant, addRestaurant);
 
 router
   .route('/:id')
   .get(getRestaurant)
-  .delete(deleteRestaurant);
+  .delete(authIsRestaurantOwner, deleteRestaurant);
 
 // Dishes
 router
   .route('/:id/dishes')
   .get(getDishes)
-  .post(addDish);
+  .post(authIsRestaurantOwner, addDish);
   
 router
   .route('/:id/dishes/:dishId')
-  .delete(deleteDish);
+  .get(getDish)
+  .delete(authIsRestaurantOwner, deleteDish);
 
 // Reviews
 router
@@ -49,6 +60,7 @@ router
 
 router
   .route('/:id/reviews/:reviewId')
-  .delete(deleteReview);
+  .get(getReview)
+  .delete(authIsReviewAuthor, deleteReview);
 
 module.exports = router;
