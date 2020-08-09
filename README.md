@@ -5,8 +5,7 @@ Fullstack food ordering app made with MERN.
 - Node.js
 - Express
 - React.js
-- MongoDB
-- Mongoose
+- PostgreSQL
 
 ## Running
 ### Server
