@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
-const { getUsers, addUser, addOwner, addAdmin, loginUser } = require('../controllers/userControllers');
+const verifyToken = require('../middleware/verifyToken');
+const { getUsers, addUser, addOwner, addAdmin, loginUser, logoutUser, getCurrentUser } = require('../controllers/userControllers');
+
+router.use('/me', verifyToken);
+router.use('/logout', verifyToken);
 
 router
   .route('/')
-  .get(getUsers)
+  .get(getUsers);
+
+router
+  .route('/me')
+  .get(getCurrentUser);
 
 router
   .route('/signup')
@@ -22,5 +30,9 @@ router
 router
   .route('/login')
   .post(loginUser);
+
+router
+  .route('/logout')
+  .get(logoutUser);
 
 module.exports = router;

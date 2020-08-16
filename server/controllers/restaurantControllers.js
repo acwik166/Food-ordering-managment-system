@@ -3,6 +3,7 @@ const db = require('../db/index');
 exports.getRestaurants = async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM restaurant');
+    console.log(req.user);
     return res.status(200).json({
       success: true,
       length: result.rows.length,

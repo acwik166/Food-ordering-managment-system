@@ -1,14 +1,13 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-  const header = req.headers['authorization'];
-  const token = header && header.split(' ')[1];
+  const cookie = req.cookies.access_token;
 
-  if (token == null) {
+  if (cookie == null) {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+  jwt.verify(cookie.token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
       res.sendStatus(403);
     }

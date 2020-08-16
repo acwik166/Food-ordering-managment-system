@@ -7,5 +7,14 @@
 //   }
 // }
 
+exports.authUser = () => {
+  return (req, res, next) => {
+    if (req.user == null) {
+      res.status(401).send('User is not logged in');
+    }
+    next();
+  }
+}
+
 
 
