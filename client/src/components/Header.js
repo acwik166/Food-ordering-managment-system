@@ -12,6 +12,7 @@ const Header = () => {
         { isAuthenticated ? 
         <> 
           <li><Link to="/">Home</Link></li>
+          <li><Link to="/restaurants">Restaurants</Link></li>
           <li><Link to="/logout">Logout</Link></li> :
         </> :
         <>

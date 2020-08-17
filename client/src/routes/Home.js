@@ -1,11 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+
+import { AuthContext } from '../context/AuthContext';
 
 const Home = () => {
-
+  const { setIsAuthenticated } = useContext(AuthContext);
   useEffect(() => {
-    fetch('api/v1/restaurants/9/dishes')
-    .then((result) => result.json())
-    .then((json) => console.log(json));
+    const fetchData = async () => {
+      const response = await fetch('api/v1/restaurants/9/dishes')
+      if (response.status === 401) {
+        setIsAuthenticated(false);
+      }
+      const data = await response.json();
+      console.log(data);
+    }
+    fetchData();
   }, [])
 
   return (

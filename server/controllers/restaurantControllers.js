@@ -2,8 +2,9 @@ const db = require('../db/index');
 
 exports.getRestaurants = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM restaurant');
-    console.log(req.user);
+    const city = req.query.city;
+    const result = await db.query('SELECT * FROM restaurant JOIN restaurantAddress ON (restaurantAddress.id = restaurant.address_id) WHERE city ~* $1', [city]);
+    console.log(result);
     return res.status(200).json({
       success: true,
       length: result.rows.length,
