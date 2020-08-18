@@ -26,41 +26,39 @@ const {
   deleteReview 
 } = require('../controllers/reviewController');
 
-router.use('/', verifyToken);
 router.use('/:id', setRestaurant)
-router.use('/:id', authIsRestaurantOwner);
 
 // Restaurant 
 router
   .route('/')
   .get(getRestaurants)
-  .post(authAddRestaurant, addRestaurant);
+  .post(verifyToken, authAddRestaurant, addRestaurant);
 
 router
   .route('/:id')
   .get(getRestaurant)
-  .delete(authIsRestaurantOwner, deleteRestaurant);
+  .delete(verifyToken, authIsRestaurantOwner, deleteRestaurant);
 
 // Dishes
 router
   .route('/:id/dishes')
   .get(getDishes)
-  .post(authIsRestaurantOwner, addDish);
+  .post(verifyToken, authIsRestaurantOwner, addDish);
   
 router
   .route('/:id/dishes/:dishId')
   .get(getDish)
-  .delete(authIsRestaurantOwner, deleteDish);
+  .delete(verifyToken, authIsRestaurantOwner, deleteDish);
 
 // Reviews
 router
   .route('/:id/reviews')
   .get(getReviews)
-  .post(addReview);
+  .post(verifyToken, addReview);
 
 router
   .route('/:id/reviews/:reviewId')
   .get(getReview)
-  .delete(authIsReviewAuthor, deleteReview);
+  .delete(verifyToken, authIsReviewAuthor, deleteReview);
 
 module.exports = router;
