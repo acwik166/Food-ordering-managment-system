@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Restaurant = (props) => {
+const RestaurantItem = (props) => {
   const { restaurant } = props;
   return (
     <div>
@@ -9,4 +9,4 @@ const Restaurant = (props) => {
   )
 }
 
-export default Restaurant;
+export default RestaurantItem;

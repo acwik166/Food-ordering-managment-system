@@ -7,19 +7,31 @@ const Header = () => {
   const { isAuthenticated } = useContext(AuthContext);
   return (
     <header>
-      <h1>Foodable</h1>
-      <nav>
-        { isAuthenticated ? 
-        <> 
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/restaurants">Restaurants</Link></li>
-          <li><Link to="/logout">Logout</Link></li> :
-        </> :
-        <>
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/signup">Register</Link></li>
-        </>
-        }
+      <nav className="navbar navbar-expand-lg">
+        <span className="navbar-brand mb-0 h1">Foodable</span>
+        {/* <div className="collapse navbar-collapse" id="navbarNav"> */}
+          {/* { isAuthenticated ? 
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <Link to="/">Home</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/restaurants">Restaurants</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/logout">Logout</Link>
+              </li> 
+            </ul> :
+            <ul>
+              <li className="nav-item">
+                <Link to="/login">Login</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/signup">Register</Link>
+              </li>
+            </ul>
+          } */}
+        {/* </div> */}
       </nav>
     </header>
   )

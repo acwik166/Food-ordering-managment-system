@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
-import { Spinner } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
 
-import Restaurant from '../components/Restaurant';
+import RestaurantItem from '../components/RestaurantItem';
+import Spinner from '../components/Spinner';
 
-const Restaurants = () => {
+const Restaurants = (props) => {
   const [city, setCity] = useState('');
+  const [errors, setErrors] = useState([]);
 
   const [loading, setLoading] = useState(false);
-  const [restaurants, setRestaurants] = useState([]);
+  const [restaurants, setRestaurants] = useState({});
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const fetchRestaurants = async (city) => {
     try {
       setLoading(true);
       const response = await fetch(`api/v1/restaurants/?city=${city}`);
@@ -24,26 +23,41 @@ const Restaurants = () => {
     }
   }
 
+  useEffect(() => {
+    if (props.location.state.city) {
+      fetchRestaurants(props.location.state.city);
+    }
+  }, [])
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (city === '') {
+      const newObj = {...errors, city: 'Input city name'}
+      setErrors(newObj)
+    } else {
+      fetchRestaurants(city);
+    }
+  }
+
   return (
-    <>
+    <div className="container">
       <form onSubmit={handleSubmit}>
         <label htmlFor="city">City</label>
-        <input type="text" name="city" value={city} onChange={(e) => setCity(e.target.value)} />
+        <input style={errors.city ? { border: '1px solid red'} : {}} type="text" name="city" value={city} onChange={(e) => setCity(e.target.value)} />
+        <span style={{color: "red"}}>{errors.city}</span>
         <button type="submit">Submit</button>
       </form>
-      <h1>Restaurants</h1>
       { !loading ? 
         <div>
-            {restaurants.length > 0 ?
-              restaurants.map((restaurant, i) => <Restaurant key={i} restaurant={restaurant} />) :
-              <h1>No restaurants in your area</h1>
-            }
+          {restaurants.length > 0 ?
+            restaurants.map((restaurant, i) => <RestaurantItem key={i} restaurant={restaurant} />) :
+            <h1>No restaurants in your area</h1>
+          }
         </div> :
-        <Spinner animation="border" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
+        <Spinner />
       } 
-    </>
+    </div>
   )
 }
 
