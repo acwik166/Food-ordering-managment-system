@@ -14,7 +14,7 @@ exports.authIsRestaurantOwner = (req, res, next) => {
 exports.setRestaurant = async (req, res, next) => {
   const restaurant = await prisma.restaurant.findOne({
     where: {
-      id: req.params.id
+      id: parseInt(req.params.id)
     }
   });
   if (restaurant == null) {

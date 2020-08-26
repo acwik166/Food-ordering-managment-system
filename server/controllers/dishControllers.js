@@ -4,10 +4,15 @@ const prisma = new PrismaClient()
 
 exports.getDishes = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM dish');
+    const dishes = await prisma.dish.findMany({
+      where: {
+        restaurant_id: parseInt(req.params.id)
+      }
+    });
     return res.status(200).json({
       success: true,
-      data: result.rows
+      length: dishes.length,
+      data: dishes
     })
   } catch (error) {
     return res.status(500).json({
@@ -19,10 +24,14 @@ exports.getDishes = async (req, res) => {
 
 exports.getDish = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM dish WHERE id = $1', [req.params.dishId]);
+    const dish = await prisma.dish.findOne({
+      where: {
+        id: parseInt(req.params.dishId)
+      }
+    });
     return res.status(200).json({
       success: true,
-      data: result.rows[0]
+      data: dish
     })
   } catch (error) {
     return res.status(500).json({
@@ -34,10 +43,20 @@ exports.getDish = async (req, res) => {
 
 exports.addDish = async (req, res) => {
   try {
-    const result = await db.query('INSERT INTO dish (name, sizes, ingredients, price, restaurant_id) VALUES($1, $2, $3, $4, $5)', [req.body.name, req.body.sizes, req.body.ingredients, req.body.price, req.restaurant.id]);
+    const dish = await prisma.dish.findOne.create({
+      data: {
+        name: req.body.name,
+        sizes: req.body.sizes,
+        ingredients: req.body.ingredients,
+        price: req.body.price,
+        restaurant: {
+          connect: { id: req.restaurant.id }
+        }
+      }
+    });
     return res.status(201).json({
       success: true,
-      data: `Dish ${req.body.name} added`
+      data: `Dish ${dish.name} added`
     })
   } catch (error) {
     return res.status(500).json({
@@ -49,7 +68,11 @@ exports.addDish = async (req, res) => {
 
 exports.deleteDish = async (req, res) => {
   try {
-    const result = await db.query('DELETE FROM dish WHERE id = $1', [req.params.dishId]);
+    const dish = await prisma.dish.delete({
+      where: {
+        id: parseInt(req.params.dishId)
+      }
+    })
     return res.status(201).json({
       success: true,
       message: 'Successfully deleted'

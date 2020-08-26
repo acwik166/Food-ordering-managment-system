@@ -14,7 +14,6 @@ exports.getRestaurants = async (req, res) => {
         }
       }
     });
-    console.log(restaurants);
     return res.status(200).json({
       success: true,
       length: restaurants.length,
@@ -32,7 +31,7 @@ exports.getRestaurant = async (req, res) => {
   try {
     const restaurant = await prisma.restaurant.findOne({
       where: {
-        id: req.params.id
+        id: parseInt(req.params.id)
       }
     });
     return res.status(200).json({
@@ -80,7 +79,7 @@ exports.deleteRestaurant = async (req, res) => {
   try {
     const restaurant = await prisma.restaurant.delete({
       where: {
-        id: req.params.id
+        id: parseInt(req.params.id)
       }
     });
     return res.status(200).json({

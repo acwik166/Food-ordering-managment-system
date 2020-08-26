@@ -2,9 +2,60 @@ const { PrismaClient } = require("@prisma/client")
 
 const prisma = new PrismaClient()
 
+exports.getReviews = async (req, res) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        restaurant_id: parseInt(req.params.id)
+      }
+    });
+    return res.status(500).json({
+      success: true,
+      length: reviews.length,
+      data: reviews
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Server error'
+    })
+  }
+}
+
+exports.getReview = async (req, res) => {
+  try {
+    const review = await prisma.review.findOne({
+      where: {
+        id: parseInt(req.params.reviewId)
+      }
+    });
+    res.status(200).json({
+      success: true,
+      data: review
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Server error'
+    })
+  }
+}
+
 exports.addReview = async (req, res) => {
   try {
-    const result = await db.query('INSERT INTO review (title, description, rating, client_id, restaurant_id) VALUES($1, $2, $3, $4, $5)', [req.body.title, req.body.description, req.body.rating, req.user.id, req.params.id]);
+    const review = await prisma.review.create({
+      data: {
+        title: req.body.title,
+        description: req.body.description,
+        rating: req.body.rating,
+        client: {
+          connect: { id: req.user.id }
+        },
+        restaurant: {
+          connect: { id: parseInt(req.params.id) }
+        }
+      }
+    });
     return res.status(201).json({
       success: true,
       data: 'Added review'
@@ -25,39 +76,13 @@ exports.addReview = async (req, res) => {
   }
 }
 
-exports.getReviews = async (req, res) => {
-  try {
-    const result = await db.query('SELECT * FROM review');
-    res.status(200).json({
-      success: true,
-      data: result.rows
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: 'Server error'
-    })
-  }
-}
-
-exports.getReview = async (req, res) => {
-  try {
-    const result = await db.query('SELECT * FROM review WHERE id = $1', [req.params.reviewId]);
-    res.status(200).json({
-      success: true,
-      data: result.rows[0]
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: 'Server error'
-    })
-  }
-}
-
 exports.deleteReview = async (req, res) => {
   try {
-    const result = db.query('DELETE FROM review WHERE id = $1', [req.params.reviewId]);
+    const review = await prisma.review.delete({
+      where: {
+        id: parseInt(req.params.reviewId)
+      }
+    });
     res.status(200).json({
       success: true,
       message: 'Successfully deleted'
