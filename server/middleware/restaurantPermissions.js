@@ -1,4 +1,6 @@
-const db = require('../db/index');
+const { PrismaClient } = require("@prisma/client")
+
+const prisma = new PrismaClient()
 
 // Check if user is owner of restaurant
 exports.authIsRestaurantOwner = (req, res, next) => {
@@ -10,8 +12,11 @@ exports.authIsRestaurantOwner = (req, res, next) => {
 
 // Restaurant permissions
 exports.setRestaurant = async (req, res, next) => {
-  const result = await db.query('SELECT * FROM restaurant WHERE id = $1', [req.params.id]);
-  const restaurant = result.rows[0];
+  const restaurant = await prisma.restaurant.findOne({
+    where: {
+      id: req.params.id
+    }
+  });
   if (restaurant == null) {
     return res.status(404).send('Restaurant not found');
   }
@@ -34,8 +39,11 @@ exports.authAddRestaurant = (req, res, next) => {
 }
 
 exports.authIsReviewAuthor = async (req, res, next) => {
-  const result = await db.query('SELECT * FROM review WHERE id = $1', [req.params.reviewId]);
-  const review = result.rows[0]
+  const review = await prisma.review.findOne({
+    where: {
+      id: req.params.reviewId
+    }
+  });
   if(!(req.user.id == review.client_id)) {
     return res.status(403).send('Not allowed');
   }

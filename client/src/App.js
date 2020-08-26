@@ -10,6 +10,8 @@ import Home from './routes/Home';
 import Login from './routes/Login';
 import Logout from './routes/Logout';
 
+import './styles/App.css';
+
 function App() {
   return (
     <AuthProvider>

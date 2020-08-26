@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:postgres@localhost:5432/foodable"
+}
+
+model address {
+  id        Int     @default(autoincrement()) @id
+  city      String
+  street    String
+  zip       String
+  client_id Int?
+  client    client? @relation(fields: [client_id], references: [id])
+}
+
+model client {
+  id           Int            @default(autoincrement()) @id
+  firstname    String
+  lastname     String
+  password     String
+  email        String         @unique
+  role         String?        @default("client")
+  address      address[]
+  owneraccount owneraccount[]
+  restaurant   restaurant[]
+  review       review[]
+}
+
+model dish {
+  id            Int        @default(autoincrement()) @id
+  name          String
+  sizes         String[]
+  ingredients   String[]
+  price         Float
+  restaurant_id Int
+  restaurant    restaurant @relation(fields: [restaurant_id], references: [id])
+}
+
+model owneraccount {
+  id        Int     @default(autoincrement()) @id
+  client_id Int?
+  client    client? @relation(fields: [client_id], references: [id])
+}
+
+model restaurant {
+  id                Int               @default(autoincrement()) @id
+  name              String
+  type              String
+  phone             String
+  delivery          Int
+  deliveryfee       Int
+  owner_id          Int
+  address_id        Int
+  restaurantaddress restaurantaddress @relation(fields: [address_id], references: [id])
+  client            client            @relation(fields: [owner_id], references: [id])
+  dish              dish[]
+  review            review[]
+}
+
+model restaurantaddress {
+  id         Int          @default(autoincrement()) @id
+  city       String
+  street     String
+  zip        String
+  restaurant restaurant[]
+}
+
+model review {
+  id            Int        @default(autoincrement()) @id
+  title         String
+  description   String
+  rating        Int?
+  client_id     Int?
+  restaurant_id Int
+  client        client?    @relation(fields: [client_id], references: [id])
+  restaurant    restaurant @relation(fields: [restaurant_id], references: [id])
+}

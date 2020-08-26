@@ -1,13 +1,8 @@
-import React, { useState, useContext } from 'react';
-import { Redirect } from 'react-router-dom';
-
-import { AuthContext } from '../context/AuthContext';
+import React, { useState } from 'react';
 
 import '../styles/Home.css';
 
 const Home = (props) => {
-  const { setIsAuthenticated } = useContext(AuthContext);
-
   const [city, setCity] = useState('');
   const [errors, setErrors] = useState([]);
 

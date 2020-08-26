@@ -1,5 +1,4 @@
 import React, { useRef, useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
 
 import { AuthContext } from "../context/AuthContext";
 import { login } from "../auth/userAuth";
@@ -12,7 +11,6 @@ const Login = (props) => {
 
   const emailRef = useRef();
   const passwordRef = useRef();
-  const history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +20,7 @@ const Login = (props) => {
     );
     if (response.success) {
       setIsAuthenticated(true);
-      history.push("/");
+      props.history.push("/");
     } else {
       switch (response.message) {
         case "Invalid email":

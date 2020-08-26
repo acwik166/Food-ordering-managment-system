@@ -40,25 +40,25 @@ router
   .delete(verifyToken, authIsRestaurantOwner, deleteRestaurant);
 
 // Dishes
-router
-  .route('/:id/dishes')
-  .get(getDishes)
-  .post(verifyToken, authIsRestaurantOwner, addDish);
+// router
+//   .route('/:id/dishes')
+//   .get(getDishes)
+//   .post(verifyToken, authIsRestaurantOwner, addDish);
   
-router
-  .route('/:id/dishes/:dishId')
-  .get(getDish)
-  .delete(verifyToken, authIsRestaurantOwner, deleteDish);
+// router
+//   .route('/:id/dishes/:dishId')
+//   .get(getDish)
+//   .delete(verifyToken, authIsRestaurantOwner, deleteDish);
 
-// Reviews
-router
-  .route('/:id/reviews')
-  .get(getReviews)
-  .post(verifyToken, addReview);
+// // Reviews
+// router
+//   .route('/:id/reviews')
+//   .get(getReviews)
+//   .post(verifyToken, addReview);
 
-router
-  .route('/:id/reviews/:reviewId')
-  .get(getReview)
-  .delete(verifyToken, authIsReviewAuthor, deleteReview);
+// router
+//   .route('/:id/reviews/:reviewId')
+//   .get(getReview)
+//   .delete(verifyToken, authIsReviewAuthor, deleteReview);
 
 module.exports = router;

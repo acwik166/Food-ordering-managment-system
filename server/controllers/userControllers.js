@@ -1,11 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('../db/index');
+const { PrismaClient } = require("@prisma/client")
+
+const prisma = new PrismaClient()
 
 exports.getCurrentUser = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM client WHERE id = $1', [req.user.id]);
-    const { firstname, lastname, email, role } = result.rows[0];
+    const user = await prisma.client.findOne({
+      where: {
+        id: req.user.id
+      }
+    });
+    const { firstname, lastname, email, role } = user;
     return res.status(200).json({
       success: true,
       data: {
@@ -25,10 +31,10 @@ exports.getCurrentUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM client');
+    const result = await prisma.client.findMany();
     return res.status(200).json({
       success: true,
-      data: result.rows
+      data: result
     })
   } catch (error) {
     res.status(500).json({
@@ -41,10 +47,18 @@ exports.getUsers = async (req, res) => {
 exports.addUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const result = await db.query('INSERT INTO client (firstName, lastName, password, email, role) VALUES($1, $2, $3, $4, $5)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, 'user']);
+    const user = await prisma.client.create({
+      data: {
+        firstname: req.body.firstName,
+        lastname: req.body.lastName,
+        password: hashedPassword,
+        email: req.body.email,
+        role: 'user'
+      }
+    });
     return res.status(201).json({
       success: true,
-      data: `User ${req.body.firstName} ${req.body.lastName} added`
+      data: `User ${user.firstname} ${user.lastname} added`
     })
   } catch (error) {
     return res.status(500).json({
@@ -57,10 +71,18 @@ exports.addUser = async (req, res) => {
 exports.addAdmin = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const result = await db.query('INSERT INTO client (firstName, lastName, password, email, role) VALUES($1, $2, $3, $4, $5)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, 'admin']);
+    const user = await prisma.client.create({
+      data: {
+        firstname: req.body.firstName,
+        lastname: req.body.lastName,
+        password: hashedPassword,
+        email: req.body.email,
+        role: 'admin'
+      }
+    });
     return res.status(201).json({
       success: true,
-      data: `Admin ${req.body.firstName} ${req.body.lastName} added`
+      data: `Admin ${user.firstname} ${user.lastname} added`
     })
   } catch (error) {
     return res.status(500).json({
@@ -73,10 +95,18 @@ exports.addAdmin = async (req, res) => {
 exports.addOwner = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const result = await db.query('INSERT INTO client (firstName, lastName, password, email, role) VALUES($1, $2, $3, $4, $5)', [req.body.firstName, req.body.lastName, hashedPassword, req.body.email, 'owner']);
+    const user = await prisma.client.create({
+      data: {
+        firstname: req.body.firstName,
+        lastname: req.body.lastName,
+        password: hashedPassword,
+        email: req.body.email,
+        role: 'owner'
+      }
+    });
     return res.status(201).json({
       success: true,
-      data: `Owner ${req.body.firstName} ${req.body.lastName} added`
+      data: `Owner ${user.firstname} ${user.lastname} added`
     })
   } catch (error) {
     return res.status(500).json({
@@ -88,8 +118,11 @@ exports.addOwner = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM client WHERE email = $1', [req.body.email]);
-    const user = result.rows[0];
+    const user = await prisma.client.findOne({
+      where: {
+        email: req.body.email
+      }
+    });
     if (user == null) {
       return res.status(401).json({
         success: false,

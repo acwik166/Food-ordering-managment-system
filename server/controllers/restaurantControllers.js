@@ -1,14 +1,24 @@
-const db = require('../db/index');
+const { PrismaClient } = require("@prisma/client")
+
+const prisma = new PrismaClient()
 
 exports.getRestaurants = async (req, res) => {
   try {
     const city = req.query.city;
-    const result = await db.query('SELECT * FROM restaurant JOIN restaurantAddress ON (restaurantAddress.id = restaurant.address_id) WHERE city ~* $1', [city]);
-    console.log(result);
+    const restaurants = await prisma.restaurant.findMany({
+      where: {
+        restaurantaddress: {
+          city: {
+            contains: city
+          }
+        }
+      }
+    });
+    console.log(restaurants);
     return res.status(200).json({
       success: true,
-      length: result.rows.length,
-      data: result.rows
+      length: restaurants.length,
+      data: restaurants
     })
   } catch (error) {
     return res.status(500).json({
@@ -20,10 +30,14 @@ exports.getRestaurants = async (req, res) => {
 
 exports.getRestaurant = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM restaurant WHERE id = $1', [req.params.id]);
+    const restaurant = await prisma.restaurant.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
     return res.status(200).json({
       success: true,
-      data: result.rows[0]
+      data: restaurant
     })
   } catch (error) {
     return res.status(500).json({
@@ -35,12 +49,24 @@ exports.getRestaurant = async (req, res) => {
 
 exports.addRestaurant = async (req, res) => {
   try {
-    const address = await db.query('INSERT INTO restaurantaddress (city, street, zip) VALUES($1, $2, $3) RETURNING id', [req.body.city, req.body.street, req.body.zip]);
-    const restaurantAddressId = address.rows[0].id;
-    const result = await db.query('INSERT INTO restaurant (name, type, phone, delivery, deliveryFee, owner_id, address_id) VALUES($1, $2, $3, $4, $5, $6, $7)', [req.body.name, req.body.type, req.body.phone, req.body.delivery, req.body.deliveryFee, req.user.id, restaurantAddressId]);
+    const restaurant = await prisma.restaurant.create({
+      data: {
+        name: req.body.name,
+        type: req.body.type,
+        phone: req.body.phone,
+        delivery: req.body.delivery,
+        deliveryfee: req.body.deliveryFee,
+        client: {
+          connect: { id: req.user.id }
+        },
+        restaurantaddress: {
+          create: { city: req.body.city, street: req.body.street, zip: req.body.zip }
+        }
+      }
+    });
     return res.status(201).json({
       success: true,
-      data: `Restaurant ${req.body.name} created`
+      data: restaurant
     });
   } catch (error) {
     return res.status(500).json({
@@ -52,7 +78,11 @@ exports.addRestaurant = async (req, res) => {
 
 exports.deleteRestaurant = async (req, res) => {
   try {
-    const result = await db.query('DELETE FROM restaurant WHERE id = $1', [req.params.id]);
+    const restaurant = await prisma.restaurant.delete({
+      where: {
+        id: req.params.id
+      }
+    });
     return res.status(200).json({
       success: true,
       message: 'Successfully deleted'
