@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 
-import '../styles/Home.css';
-
 const Home = (props) => {
   const [city, setCity] = useState('');
   const [errors, setErrors] = useState([]);

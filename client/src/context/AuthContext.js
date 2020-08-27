@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('api/v1/users/me');
+        const response = await fetch('http://localhost:3000/api/v1/users/me');
         const data = await response.json();
   
         if (data.success) {

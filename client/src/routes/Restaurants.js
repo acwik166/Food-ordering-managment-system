@@ -3,19 +3,23 @@ import React, { useState, useEffect } from 'react';
 import RestaurantItem from '../components/RestaurantItem';
 import Spinner from '../components/Spinner';
 
-import styles from '../styles/restaurants.module.css';
-
 const Restaurants = (props) => {
   const [city, setCity] = useState('');
   const [errors, setErrors] = useState([]);
 
+  const [propsError, setPropsError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [restaurants, setRestaurants] = useState({});
+
+  let propsCity;
+  if (props.location.state?.city !== undefined) {
+    propsCity = props.location.state.city;
+  }
 
   const fetchRestaurants = async (city) => {
     try {
       setLoading(true);
-      const response = await fetch(`api/v1/restaurants/?city=${city}`);
+      const response = await fetch(`http://localhost:3000/api/v1/restaurants/?city=${city}`);
       const data = await response.json();
       setRestaurants(data.data);
       setLoading(false);
@@ -25,10 +29,11 @@ const Restaurants = (props) => {
   }
 
   useEffect(() => {
-    if (props.location.state.city) {
-      fetchRestaurants(props.location.state.city);
-    }
-  }, [props.location.state.city])
+    if (propsCity) {
+      fetchRestaurants(propsCity);
+    } 
+    setPropsError(true);
+  }, [propsCity])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,7 +47,7 @@ const Restaurants = (props) => {
   }
 
   return (
-    <div className={styles.restaurant}>
+    <div>
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -54,9 +59,11 @@ const Restaurants = (props) => {
         </form>
         { !loading ? 
           <div className="container">
-             <div class="row row-cols-4">
+             <div className="row row-cols-4">
               {restaurants.length > 0 ?
                 restaurants.map((restaurant, i) => <RestaurantItem key={i} restaurant={restaurant} />) :
+                propsError ? 
+                <h1>Please provide a city</h1> :
                 <h1>No restaurants in your area</h1>
               }
              </div>
