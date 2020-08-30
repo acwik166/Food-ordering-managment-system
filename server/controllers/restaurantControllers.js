@@ -55,7 +55,7 @@ exports.addRestaurant = async (req, res) => {
         phone: req.body.phone,
         delivery: req.body.delivery,
         deliveryfee: req.body.deliveryFee,
-        client: {
+        user: {
           connect: { id: req.user.id }
         },
         restaurantaddress: {

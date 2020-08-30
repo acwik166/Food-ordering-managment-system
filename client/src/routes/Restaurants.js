@@ -3,6 +3,18 @@ import React, { useState, useEffect } from 'react';
 import RestaurantItem from '../components/RestaurantItem';
 import Spinner from '../components/Spinner';
 
+import { makeStyles } from '@material-ui/core/styles';
+import { Grid, Container, TextField, Button } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  grid: {
+    marginTop: 50
+  }
+}));
+
 const Restaurants = (props) => {
   const [city, setCity] = useState('');
   const [errors, setErrors] = useState([]);
@@ -46,32 +58,36 @@ const Restaurants = (props) => {
     }
   }
 
+  const classes = useStyles();
+
   return (
-    <div>
-      <div className="container">
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="city">City</label>
-            <input style={errors.city ? { border: '1px solid red'} : {}} type="text" name="city" className="form-control" value={city} onChange={(e) => setCity(e.target.value)} />
-            <span style={{color: "red"}}>{errors.city}</span>
-            <button type="submit">Submit</button>
-          </div>
-        </form>
-        { !loading ? 
-          <div className="container">
-             <div className="row row-cols-4">
-              {restaurants.length > 0 ?
-                restaurants.map((restaurant, i) => <RestaurantItem key={i} restaurant={restaurant} />) :
-                propsError ? 
-                <h1>Please provide a city</h1> :
-                <h1>No restaurants in your area</h1>
-              }
-             </div>
-          </div> :
-          <Spinner />
-        } 
-      </div>
-    </div>
+    <Container>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="city">City</label>
+          <input style={errors.city ? { border: '1px solid red'} : {}} type="text" name="city" className="form-control" value={city} onChange={(e) => setCity(e.target.value)} />
+          <span style={{color: "red"}}>{errors.city}</span>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+      <form noValidate autoComplete="off">
+        <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+        <Button variant="contained" color="primary">
+          Search
+        </Button>
+      </form>
+      { !loading ? 
+        <Grid className={classes.grid} container spacing={3}>
+          {restaurants.length > 0 ?
+            restaurants.map((restaurant, i) => <RestaurantItem key={i} restaurant={restaurant} />) :
+            propsError ? 
+            <h1>Please provide a city</h1> :
+            <h1>No restaurants in your area</h1>
+          }
+        </Grid> :
+        <Spinner />
+      } 
+    </Container>
   )
 }
 

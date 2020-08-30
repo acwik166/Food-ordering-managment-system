@@ -48,7 +48,7 @@ exports.addReview = async (req, res) => {
         title: req.body.title,
         description: req.body.description,
         rating: req.body.rating,
-        client: {
+        user: {
           connect: { id: req.user.id }
         },
         restaurant: {

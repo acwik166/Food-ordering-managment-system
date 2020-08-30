@@ -43,15 +43,17 @@ exports.getDish = async (req, res) => {
 
 exports.addDish = async (req, res) => {
   try {
-    const dish = await prisma.dish.findOne.create({
+    const dish = await prisma.dish.create({
       data: {
         name: req.body.name,
-        sizes: req.body.sizes,
-        ingredients: req.body.ingredients,
+        sizes: { set: req.body.sizes },
+        ingredients: { set: req.body.ingredients },
         price: req.body.price,
         restaurant: {
           connect: { id: req.restaurant.id }
-        }
+        },
+        ingredientchoice: req.body.ingredientChoice,
+        additions: req.body.additions 
       }
     });
     return res.status(201).json({
@@ -59,6 +61,7 @@ exports.addDish = async (req, res) => {
       data: `Dish ${dish.name} added`
     })
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: 'Server error'

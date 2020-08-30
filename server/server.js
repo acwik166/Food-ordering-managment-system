@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const userRoutes = require('./routes/userRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 // Configure environmental variables
 dotenv.config({ path: './config/config.env' });
@@ -19,6 +20,7 @@ app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/restaurants', restaurantRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 const PORT = process.env.PORT || 5000;
 

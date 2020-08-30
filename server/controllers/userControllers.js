@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 exports.getCurrentUser = async (req, res) => {
   try {
-    const user = await prisma.client.findOne({
+    const user = await prisma.user.findOne({
       where: {
         id: req.user.id
       }
@@ -31,7 +31,7 @@ exports.getCurrentUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
   try {
-    const result = await prisma.client.findMany();
+    const result = await prisma.user.findMany();
     return res.status(200).json({
       success: true,
       data: result
@@ -47,7 +47,7 @@ exports.getUsers = async (req, res) => {
 exports.addUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await prisma.client.create({
+    const user = await prisma.user.create({
       data: {
         firstname: req.body.firstName,
         lastname: req.body.lastName,
@@ -71,7 +71,7 @@ exports.addUser = async (req, res) => {
 exports.addAdmin = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await prisma.client.create({
+    const user = await prisma.user.create({
       data: {
         firstname: req.body.firstName,
         lastname: req.body.lastName,
@@ -95,7 +95,7 @@ exports.addAdmin = async (req, res) => {
 exports.addOwner = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await prisma.client.create({
+    const user = await prisma.user.create({
       data: {
         firstname: req.body.firstName,
         lastname: req.body.lastName,
@@ -118,7 +118,7 @@ exports.addOwner = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   try {
-    const user = await prisma.client.findOne({
+    const user = await prisma.user.findOne({
       where: {
         email: req.body.email
       }
