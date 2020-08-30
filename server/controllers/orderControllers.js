@@ -41,7 +41,14 @@ exports.addOrder = async (req, res) => {
   try {
     const order = await prisma.order.create({
       data: {
-        
+        user: {
+          connect: req.user.id
+        },
+        quantity: req.body.quantity,
+        amount: req.body.amount,
+        // address: {
+        //   connect: 
+        // }
       }
     });
     return res.status(201).json({
