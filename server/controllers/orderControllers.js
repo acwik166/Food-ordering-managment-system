@@ -1,4 +1,5 @@
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client");
+const { connect } = require("../routes/orderRoutes");
 
 const prisma = new PrismaClient()
 
@@ -39,16 +40,25 @@ exports.getOrder = async (req, res) => {
 
 exports.addOrder = async (req, res) => {
   try {
+    // const address = await prisma.address.findOne({
+    //   where: {
+    //     user_id: req.user.id
+    //     // id: 26
+    //   }
+    // });
+    // const address_id = address.id;
     const order = await prisma.order.create({
       data: {
-        user: {
-          connect: req.user.id
-        },
         quantity: req.body.quantity,
+        phone: req.body.phone,
         amount: req.body.amount,
-        // address: {
-        //   connect: 
-        // }
+        user: {
+          connect: { id: req.user.id }
+        },
+        address: {
+          // CONNECT TO ACTUAL ADDRESS OBJECT
+          connect: { id: 1 }
+        }
       }
     });
     return res.status(201).json({
@@ -56,6 +66,7 @@ exports.addOrder = async (req, res) => {
       data: order
     })
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: 'Server error'
